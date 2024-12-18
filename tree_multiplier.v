@@ -27,7 +27,13 @@ module tree_multiplier(
         .sum(intermediate_sums[0][31:0]),
         .cout(carry_out[0][32])
     );
-    assign intermediate_sums[0][63:32] = partial_products[0][63:32] + partial_products[1][63:32] + carry_out[0][32];
+    ripple_carry rca_00(
+        .a(partial_products[0][63:32]),
+        .b(partial_products[1][63:32]),
+        .cin(carry_out[0][32]),
+        .sum(intermediate_sums[0][63:32]),
+        .cout(carry_out[0][31])
+    );
 
     generate
         for (j = 1; j < 31; j = j + 1) begin
@@ -38,8 +44,13 @@ module tree_multiplier(
                 .sum(intermediate_sums[j][31:0]),
                 .cout(carry_out[j][32])
             );
-            assign intermediate_sums[j][63:32] = 
-                intermediate_sums[j-1][63:32] + partial_products[j+1][63:32] + carry_out[j][32];
+            ripple_carry rca1(
+                .a(intermediate_sums[j-1][63:32]),
+                .b(partial_products[j+1][63:32]),
+                .cin(carry_out[j][32]),
+                .sum(intermediate_sums[j][63:32]),
+                .cout(carry_out[j][31])
+            );
         end
     endgenerate
 
