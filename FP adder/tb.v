@@ -4,7 +4,7 @@ module FloatAdditionTBB #(parameter XLEN = 32);
     reg overflow, underflow, exception;
     wire [XLEN-1:0] result;
     real value;
-    Float_Add F_Add (.X(A), .Y(B), .sum(result));
+    FPCarryLookAheadAdder #(32) F_Add (.in1(A), .in2(B), .result(result));
 
     initial  
     begin
@@ -83,7 +83,7 @@ module FloatAdditionTBB #(parameter XLEN = 32);
         end else if (result[30:23] == 8'b00000000) begin
             underflow = 1;
         end
-        $display("Expected Value : %f Result : %f Overflow: %b Underflow: %b", 2.8235295 - 0.9411765, value, overflow, underflow);
+       $display("Expected Value : %f Result : %f Overflow: %b Underflow: %b", 2.8235295 - 0.9411765, value, overflow, underflow);
 
         #20
         value =(2**(result[30:23]-127))*($itor({1'b1,result[22:0]})/2**23)*((-1)**(result[31]));
