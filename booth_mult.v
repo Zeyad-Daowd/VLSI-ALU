@@ -1,18 +1,18 @@
 module booth_multiplier (
-    input [31:0] M, 
-    input [31:0] Q, 
+    input signed [31:0] M, 
+    input signed [31:0] Q, 
     input clk,     
     input start,   
-    output reg [63:0] result, 
+    output reg signed [63:0] result, 
     output reg done          
 );
 
-    reg signed [31:0] AC;    
-    reg signed [31:0] QR;     
-    reg signed Qn1;           
-    reg [5:0] SC;             
-    reg signed [31:0] multiplicand;
-    
+    reg signed [63:0] AC;         // Extend AC to 64 bits
+    reg signed [31:0] QR;         // Multiplicand remains 32 bits
+    reg signed Qn1;               // Tracks the previous bit
+    reg [5:0] SC;                 // Counter for iterations
+    reg signed [63:0] multiplicand; // Extend multiplicand to 64 bits
+
     localparam IDLE       = 3'b000;
     localparam CHECK_BITS = 3'b001;
     localparam ADD        = 3'b010;
@@ -24,16 +24,10 @@ module booth_multiplier (
 
     always @(posedge clk) begin
         if (start) begin
-            if (M == 32'h80000000) begin
-                AC <= 32'sd0;
-                QR <= $signed(Q);
-                multiplicand <= M;
-            end else begin
-                AC <= 32'sd0; 
-                QR <= $signed(Q); 
-                multiplicand <= $signed(M); 
-            end
-            
+            // Initialize registers
+            AC <= 64'sd0; 
+            QR <= Q; 
+            multiplicand <= {{32{M[31]}}, M}; // Sign-extend M to 64 bits
             Qn1 <= 1'b0; 
             SC <= 6'd32; 
             current_state <= CHECK_BITS;
@@ -69,8 +63,8 @@ module booth_multiplier (
             SUB: AC <= AC - multiplicand;
             SHIFT: begin
                 Qn1 <= QR[0];                  
-                QR <= {AC[0], QR[31:1]};       
-                AC <= {AC[31], AC[31:1]}; 
+                QR <= {AC[0], QR[31:1]};  // Shift QR and bring in AC[0]
+                AC <= {AC[63], AC[63:1]}; // Arithmetic right shift AC (sign-extend AC[63])
                 SC <= SC - 1;                  
             end
             FINISH: begin
@@ -79,5 +73,4 @@ module booth_multiplier (
             end
         endcase
     end
-
 endmodule
