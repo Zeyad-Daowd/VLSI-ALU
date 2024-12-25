@@ -30,5 +30,7 @@
   "SYNTH_MAX_FANOUT": 10,
   "BASE_SDC_FILE": "/home/fatma/openlane2/openlane/ALU/tree/constriants.sdc",
   "PDK": "sky130A",
-  "STD_CELL_LIBRARY": "sky130_fd_sc_hd"
+  "STD_CELL_LIBRARY": "sky130_fd_sc_hd",
+  "FP_PDN_HORIZONTAL_LAYER": null,
+  "FP_PDN_HWIDTH": 0
 }
