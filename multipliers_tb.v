@@ -1,3 +1,5 @@
+//time precision
+`timescale 1ns / 1ps
 module multipliers_tb;
      
     reg clk;    
@@ -12,6 +14,7 @@ module multipliers_tb;
         .M(M),
         .Q(Q),
         .result(result),
+        .rst(rst),
         .clk(clk),
         .start(start),
         .done(done)
@@ -52,6 +55,8 @@ module multipliers_tb;
         M = 0;
         Q = 0;
         start = 0;
+        rst = 1;
+        #20;
 
         // Monitor statement
        // $monitor("Time = %0t | M = %d | Q = %d | Result1 = %d | Result2 = %d | Result3 = %d | Result4 = %d | Done = %b, Done2 = %b", 
@@ -62,6 +67,7 @@ module multipliers_tb;
         Q = 32'd6789;
 
         start = 1;
+        rst = 0;
         #10;
         start = 0;
         wait(done && done2);

@@ -1,17 +1,19 @@
-
+`timescale 1ns / 1ps
 module booth_multiplier_tb;
 
     reg [31:0] M;          
     reg [31:0] Q;          
     reg clk;               
-    reg start;             
+    reg start;    
+    reg rst;    
     wire [63:0] result;    
     wire done;             
 
-    booth_multiplier uut (
+    booth_multiplier_ss uut (
         .M(M),
         .Q(Q),
         .clk(clk),
+        .rst(rst),
         .start(start),
         .result(result),
         .done(done)
@@ -26,13 +28,14 @@ module booth_multiplier_tb;
         M = 0;
         Q = 0;
         start = 0;
-
+        rst = 1;
         $monitor("Time = %0t | M = %d | Q = %d | Result = %d | Done = %b", $time, M, Q, result, done);
 
         // Test Case 1: 12345 x 6789
         #10;
         M = 32'd12345;
         Q = 32'd6789;
+        rst = 0;
         start = 1;
         #10;
         start = 0;
